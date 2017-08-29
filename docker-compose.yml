@@ -1,0 +1,16 @@
+version: '3'
+services:
+  app:
+    build: .
+    expose:
+      - 8080
+    links:
+      - redis
+  redis:
+    image: "redis:4-alpine"
+  proxy:
+    build: nginx
+    ports:
+      - "8398:80"
+    links:
+      - app
