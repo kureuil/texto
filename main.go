@@ -28,6 +28,9 @@ func (h *ChatHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			messageType, p, err := conn.ReadMessage()
 			if err != nil {
 				h.log.Error(err)
+				if err := conn.Close(); err != nil {
+					h.log.Error(err)
+				}
 				close(inboundChan)
 				return
 			}
