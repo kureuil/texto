@@ -11,11 +11,12 @@ jobs:
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
       # documented at https://circleci.com/docs/2.0/circleci-images/
-      - image: redis:4
+      # - image: redis:4
 
-    working_directory: /go/src/github.com/{{ORG_NAME}}/{{REPO_NAME}}
+    working_directory: /go/src/github.com/kureuil/texto
     steps:
       - checkout
 
       # specify any bash command here prefixed with `run: `
       - run: go test -v ./...
+      - run: go vet ./...
