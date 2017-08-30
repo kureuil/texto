@@ -10,10 +10,19 @@ import (
 
 // A Client represents an open WebSocket connection with a user.
 type Client struct {
-	ID           uuid.UUID
-	log          *logrus.Logger
-	conn         *websocket.Conn
-	inboundChan  chan *ChatMessage
+	// The universally unique ID of the user on this node.
+	ID uuid.UUID
+
+	// The current logrus instance.
+	log *logrus.Logger
+
+	// The WebSocket connection associated to this user.
+	conn *websocket.Conn
+
+	// inboundChan is used to transfer messages incoming from the user to the main client loop.
+	inboundChan chan *ChatMessage
+
+	// outboundChan is used to transfer messages incoming from the broker to the main client loop.
 	outboundChan chan *ChatMessage
 }
 
@@ -29,7 +38,7 @@ func NewClient(conn *websocket.Conn, log *logrus.Logger) Client {
 }
 
 // consumeWebsocket reads incoming messages from the socket, and transfer them to the main client loop using the
-// inbouncChan channel.
+// inboundChan channel.
 func (c *Client) consumeWebsocket() {
 	for {
 		message := new(ChatMessage)
@@ -78,6 +87,8 @@ func (c *Client) HandleMessage(msg *ChatMessage) *ChatMessage {
 	return nil
 }
 
+// Run listens on the inboundChan and outboundChan for new messages to process or send.
+// It timeouts after 5 minutes of inactivity.
 func (c *Client) Run() {
 	c.outboundChan <- NewConnectionMessage(nil, c.ID, ConnectionMessagePayload{
 		ClientID: c.ID,

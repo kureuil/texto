@@ -167,7 +167,6 @@ func NewAckMessage(messageID *uuid.UUID, clientID uuid.UUID) *ChatMessage {
 	}
 }
 
-
 // NewSendMessage creates a new ChatMessage of kind "send", with a SendMessagePayload.
 func NewSendMessage(messageID *uuid.UUID, clientID uuid.UUID, payload SendMessagePayload) *ChatMessage {
 	var mID uuid.UUID
