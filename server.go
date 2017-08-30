@@ -41,7 +41,7 @@ func NewServer(addr string, logger *logrus.Logger) Server {
 }
 
 // Run tells the Server to start listening for incoming HTTP connections.
-func (s Server) Run() error {
+func (s *Server) Run() error {
 	s.log.WithField("addr", s.httpServer.Addr).Info("Starting HTTP server")
 	return s.httpServer.ListenAndServe()
 }
