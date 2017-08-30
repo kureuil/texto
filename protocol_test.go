@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/satori/go.uuid"
 )
 
 const invalidChatMessage = `
@@ -120,4 +121,70 @@ func TestMessageUnmarshalJSON(t *testing.T) {
 	if assert.NoError(t, ackMsg.UnmarshalJSON([]byte(ackChatMessage))) {
 		assert.Equal(t, "b857e508-3993-46b9-b227-ca7528f2861d", ackMsg.ID.String())
 	}
+}
+
+func TestNewErrorMessage(t *testing.T) {
+	var defaultID uuid.UUID
+	clientID := uuid.NewV4()
+	errorPayload := ErrorMessagePayload{"ENOMEM", "Out-of-memory"}
+	msg := NewErrorMessage(nil, clientID, errorPayload)
+	assert.NotEqual(t, defaultID.String(), msg.ID.String())
+	assert.Equal(t, clientID.String(), msg.ClientID.String())
+	assert.Equal(t, ErrorMessageKind, msg.Kind)
+	assert.Equal(t, errorPayload.Code, msg.Data.(ErrorMessagePayload).Code)
+	assert.Equal(t, errorPayload.Description, msg.Data.(ErrorMessagePayload).Description)
+	answer := NewErrorMessage(&msg.ID, clientID, errorPayload)
+	assert.Equal(t, msg.ID, answer.ID)
+}
+
+func TestNewAckMessage(t *testing.T) {
+	var defaultID uuid.UUID
+	clientID := uuid.NewV4()
+	msg := NewAckMessage(nil, clientID)
+	assert.NotEqual(t, defaultID.String(), msg.ID.String())
+	assert.Equal(t, clientID.String(), msg.ClientID.String())
+	assert.Equal(t, AcknowledgeMessageKind, msg.Kind)
+	answer := NewAckMessage(&msg.ID, clientID)
+	assert.Equal(t, msg.ID, answer.ID)
+}
+
+func TestNewConnectionMessage(t *testing.T) {
+	var defaultID uuid.UUID
+	clientID := uuid.NewV4()
+	connectionPayload := ConnectionMessagePayload{clientID}
+	msg := NewConnectionMessage(nil, clientID, connectionPayload)
+	assert.NotEqual(t, defaultID.String(), msg.ID.String())
+	assert.Equal(t, clientID.String(), msg.ClientID.String())
+	assert.Equal(t, ConnectionMessageKind, msg.Kind)
+	assert.Equal(t, connectionPayload.ClientID, msg.Data.(ConnectionMessagePayload).ClientID)
+	answer := NewConnectionMessage(&msg.ID, clientID, connectionPayload)
+	assert.Equal(t, msg.ID, answer.ID)
+}
+
+func TestNewRegistrationMessage(t *testing.T) {
+	var defaultID uuid.UUID
+	clientID := uuid.NewV4()
+	msg := NewRegistrationMessage(nil, clientID)
+	assert.NotEqual(t, defaultID.String(), msg.ID.String())
+	assert.Equal(t, clientID.String(), msg.ClientID.String())
+	assert.Equal(t, RegistrationKind, msg.Kind)
+	answer := NewRegistrationMessage(&msg.ID, clientID)
+	assert.Equal(t, msg.ID, answer.ID)
+}
+
+func TestNewSendMessage(t *testing.T) {
+	var defaultID uuid.UUID
+	clientID := uuid.NewV4()
+	sendPayload := SendMessagePayload{
+		ReceiverID: clientID,
+		Text: "Hello World!",
+	}
+	msg := NewSendMessage(nil, clientID, sendPayload)
+	assert.NotEqual(t, defaultID.String(), msg.ID.String())
+	assert.Equal(t, clientID.String(), msg.ClientID.String())
+	assert.Equal(t, SendMessageKind, msg.Kind)
+	assert.Equal(t, sendPayload.ReceiverID, msg.Data.(SendMessagePayload).ReceiverID)
+	assert.Equal(t, sendPayload.Text, msg.Data.(SendMessagePayload).Text)
+	answer := NewRegistrationMessage(&msg.ID, clientID)
+	assert.Equal(t, msg.ID, answer.ID)
 }

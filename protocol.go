@@ -81,7 +81,7 @@ func (m *ChatMessage) UnmarshalJSON(input []byte) error {
 
 // An ErrorMessagePayload contains the code and the human-readable description of an error.
 type ErrorMessagePayload struct {
-	Code string `json:"code"`
+	Code        string `json:"code"`
 	Description string `json:"description"`
 }
 
@@ -93,11 +93,93 @@ type ConnectionMessagePayload struct {
 // A SendMessagePayload contains the receiver's ID and the content of the message.
 type SendMessagePayload struct {
 	ReceiverID uuid.UUID `json:"receiver_id"`
-	Text string `json:"text"`
+	Text       string `json:"text"`
 }
 
 // A ReceiveMessagePayload contains the sender's ID and the content of the message.
 type ReceiveMessagePayload struct {
 	SenderID uuid.UUID `json:"sender_id"`
-	Text string `json:"text"`
+	Text     string `json:"text"`
+}
+
+// NewErrorMessage creates a new ChatMessage of kind "error", with an ErrorMessagePayload.
+func NewErrorMessage(messageID *uuid.UUID, clientID uuid.UUID, payload ErrorMessagePayload) *ChatMessage {
+	var mID uuid.UUID
+	if messageID == nil {
+		mID = uuid.NewV4()
+	} else {
+		mID = *messageID
+	}
+	return &ChatMessage{
+		ID:       mID,
+		ClientID: clientID,
+		Kind:     ErrorMessageKind,
+		Data:     payload,
+	}
+}
+
+// NewRegistrationMessage creates a new ChatMessage of kind "registration".
+func NewRegistrationMessage(messageID *uuid.UUID, clientID uuid.UUID) *ChatMessage {
+	var mID uuid.UUID
+	if messageID == nil {
+		mID = uuid.NewV4()
+	} else {
+		mID = *messageID
+	}
+	return &ChatMessage{
+		ID:       mID,
+		ClientID: clientID,
+		Kind:     RegistrationKind,
+		Data:     nil,
+	}
+}
+
+
+// NewConnectionMessage creates a new ChatMessage of kind "connection", with a ConnectionMessagePayload.
+func NewConnectionMessage(messageID *uuid.UUID, clientID uuid.UUID, payload ConnectionMessagePayload) *ChatMessage {
+	var mID uuid.UUID
+	if messageID == nil {
+		mID = uuid.NewV4()
+	} else {
+		mID = *messageID
+	}
+	return &ChatMessage{
+		ID:       mID,
+		ClientID: clientID,
+		Kind:     ConnectionMessageKind,
+		Data:     payload,
+	}
+}
+
+// NewAckMessage creates a new ChatMessage of kind "acknowledge".
+func NewAckMessage(messageID *uuid.UUID, clientID uuid.UUID) *ChatMessage {
+	var mID uuid.UUID
+	if messageID == nil {
+		mID = uuid.NewV4()
+	} else {
+		mID = *messageID
+	}
+	return &ChatMessage{
+		ID:       mID,
+		ClientID: clientID,
+		Kind:     AcknowledgeMessageKind,
+		Data:     nil,
+	}
+}
+
+
+// NewSendMessage creates a new ChatMessage of kind "send", with a SendMessagePayload.
+func NewSendMessage(messageID *uuid.UUID, clientID uuid.UUID, payload SendMessagePayload) *ChatMessage {
+	var mID uuid.UUID
+	if messageID == nil {
+		mID = uuid.NewV4()
+	} else {
+		mID = *messageID
+	}
+	return &ChatMessage{
+		ID:       mID,
+		ClientID: clientID,
+		Kind:     SendMessageKind,
+		Data:     payload,
+	}
 }
