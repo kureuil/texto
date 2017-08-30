@@ -19,6 +19,9 @@ type Client struct {
 	// The WebSocket connection associated to this user.
 	conn *websocket.Conn
 
+	// The Broker in which the client is registered
+	broker Broker
+
 	// inboundChan is used to transfer messages incoming from the user to the main client loop.
 	inboundChan chan *ChatMessage
 
@@ -27,10 +30,11 @@ type Client struct {
 }
 
 // NewClient creates a new Client from an open WebSocket connection.
-func NewClient(conn *websocket.Conn, log *logrus.Logger) Client {
-	return Client{
+func NewClient(log *logrus.Logger, conn *websocket.Conn, broker Broker) *Client {
+	return &Client{
 		ID:           uuid.NewV4(),
 		log:          log,
+		broker:       broker,
 		conn:         conn,
 		inboundChan:  make(chan *ChatMessage, 32),
 		outboundChan: make(chan *ChatMessage, 32),
@@ -77,6 +81,24 @@ func (c *Client) HandleMessage(msg *ChatMessage) *ChatMessage {
 				Description: "The submitted client ID doesn't match the current session.",
 			})
 		}
+		payload, ok := msg.Data.(SendMessagePayload)
+		if !ok {
+			return NewErrorMessage(&msg.ID, c.ID, ErrorMessagePayload{
+				Code: "EINVAL",
+				Description: "The data payload doesn't match the given kind",
+			})
+		}
+		if err := c.broker.Send(payload.ReceiverID, &BrokerMessage{
+			SenderID: c.ID,
+			RecipientID: payload.ReceiverID,
+			Text: payload.Text,
+		}); err != nil {
+			c.log.Error(err)
+			return NewErrorMessage(&msg.ID, c.ID, ErrorMessagePayload{
+				Code: "EBROKER",
+				Description: "Unable to send the message to the recipient.",
+			})
+		}
 		return NewAckMessage(&msg.ID, c.ID)
 	default:
 		return NewErrorMessage(&msg.ID, c.ID, ErrorMessagePayload{
@@ -98,7 +120,7 @@ func (c *Client) Run() {
 		select {
 		case inbound := <-c.inboundChan:
 			if inbound == nil {
-				break
+				return
 			}
 			c.log.
 				WithField("client", c.ID.String()).
@@ -127,7 +149,7 @@ func (c *Client) Run() {
 			if err := c.conn.Close(); err != nil {
 				c.log.Error(err)
 			}
-			break
+			return
 		}
 	}
 }

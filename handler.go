@@ -9,17 +9,19 @@ import (
 
 // ChatHandler is the HTTP Handler responsible for upgrading connections to the WebSocket Protocol and managing them.
 type ChatHandler struct {
-	log      *logrus.Logger
-	upgrader websocket.Upgrader
+	Log      *logrus.Logger
+	Broker   Broker
+	Upgrader websocket.Upgrader
 }
 
 // ServeHTTP is the http.Handler implementation for ChatHandler.
 func (h *ChatHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	conn, err := h.upgrader.Upgrade(w, r, nil)
+	conn, err := h.Upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		h.log.Error(err)
+		h.Log.Error(err)
 		return
 	}
-	client := NewClient(conn, h.log)
+	client := NewClient(h.Log, conn, h.Broker)
+	h.Broker.Register(client)
 	client.Run()
 }

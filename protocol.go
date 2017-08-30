@@ -182,3 +182,20 @@ func NewSendMessage(messageID *uuid.UUID, clientID uuid.UUID, payload SendMessag
 		Data:     payload,
 	}
 }
+
+// NewReceiveMessage creates a new ChatMessage of kind "send", with a ReceiveMessagePayload.
+func NewReceiveMessage(messageID *uuid.UUID, clientID uuid.UUID, payload ReceiveMessagePayload) *ChatMessage {
+	var mID uuid.UUID
+	if messageID == nil {
+		mID = uuid.NewV4()
+	} else {
+		mID = *messageID
+	}
+	return &ChatMessage{
+		ID:       mID,
+		ClientID: clientID,
+		Kind:     ReceiveMessageKind,
+		Data:     payload,
+	}
+}
+
