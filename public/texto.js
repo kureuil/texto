@@ -180,6 +180,14 @@
                 let $errorBox = document.querySelector('#error-box');
                 let recipient = $recipientInput.value;
                 let text = $textInput.value;
+                if (!recipient.match(/^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i)) {
+                    window.alert('Recipient is not a valid UUIDv4.');
+                    return;
+                }
+                if (!text.length) {
+                    window.alert('Text cannot be empty.');
+                    return;
+                }
                 $recipientInput.setAttribute('disabled', 'true');
                 $textInput.setAttribute('disabled', 'true');
                 $submitInput.setAttribute('disabled', 'true');
