@@ -1,4 +1,4 @@
-# texto - Simple Messaging Service
+# texto - Simple Messaging Service [![CircleCI](https://circleci.com/gh/kureuil/texto/tree/master.svg?style=svg)](https://circleci.com/gh/kureuil/texto/tree/master)
 
 Texto is a simple directed chat server written in Go. Clients communicate with the server using the
 [WebSocket Protocol](http://tools.ietf.org/html/rfc6455).
