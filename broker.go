@@ -14,6 +14,8 @@ import (
 type Broker interface {
 	// Regsiter adds a Client to the Broker
 	Register(client *Client) error
+	// Unregister removes a client from the Broker
+	Unregister(client *Client) error
 	// Send sends the given message to the Client associated to the given ID.
 	Send(receiverID uuid.UUID, message *BrokerMessage) error
 	// Poll reads all incoming messages and transmit them to known Clients.
@@ -58,6 +60,12 @@ func NewRedisBroker(log *logrus.Logger, addr string) (*RedisBroker, error) {
 // Register registers a Client in the internal Client map of the Broker.
 func (b *RedisBroker) Register(client *Client) error {
 	b.clients.Store(client.ID.String(), client)
+	return nil
+}
+
+// Unregister removes a Client from the internal Client map of the Broker.
+func (b *RedisBroker) Unregister(client *Client) error {
+	b.clients.Delete(client.ID.String())
 	return nil
 }
 
@@ -131,8 +139,6 @@ func (b *RedisBroker) Send(receiverID uuid.UUID, message *BrokerMessage) error {
 	if err != nil {
 		return err
 	}
-	if _, err := b.conn.Do("PUBLISH", RedisBrokerPrefix+receiverID.String(), marshaled); err != nil {
-		return err
-	}
-	return nil
+	_, err = b.conn.Do("PUBLISH", RedisBrokerPrefix+receiverID.String(), marshaled)
+	return err
 }

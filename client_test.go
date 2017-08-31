@@ -14,6 +14,10 @@ func (b *DummyBroker) Register(client *Client) error {
 	return nil
 }
 
+func (b *DummyBroker) Unregister(client *Client) error {
+	return nil
+}
+
 func (b *DummyBroker) Send(receiverID uuid.UUID, message *BrokerMessage) error {
 	return nil
 }
