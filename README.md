@@ -80,16 +80,16 @@ connection.
 #### Message Schema
 
 Every JSON message follows the same schema:
-```json
+```javascript
 {
-    # The client_id field stores the UUID of the current client/session.
+    // The client_id field stores the UUID of the current client/session.
     "client_id": "754cd3a0-27b3-4c51-a66e-466fed82b667",
-    # The id field stores the UUID of the current message. When the server sends a response, it will use the id of the
-    # request message.
+    // The id field stores the UUID of the current message. When the server sends a response, it will use the id of the
+    // request message.
     "id": "8a15b000-02d7-4823-8336-0cd0b0b13ae9",
-    # The kind field indicates the type of the current message.
+    // The kind field indicates the type of the current message.
     "kind": "ack",
-    # The data field is a dynamically shaped field which content depends on the kind field.
+    // The data field is a dynamically shaped field which content depends on the kind field.
     "data": null
 }
 ```
@@ -101,11 +101,11 @@ Every JSON message follows the same schema:
 The `error` message kind indicates that an error was encountered when processing a request.
 
 **Payload**
-```json
+```javascript
 {
-    # The code field stores the internal code of the error, which is intended for programmatic use.
+    // The code field stores the internal code of the error, which is intended for programmatic use.
     "code": "ENOMEM",
-    # The description field stores a human readable of the error and can be displayed safely to a user or logged.
+    // The description field stores a human readable of the error and can be displayed safely to a user or logged.
     "description": "Out-of-memory"
 }
 ```
@@ -117,7 +117,7 @@ The `registration` message kind is sent by the client when it wants to fetch inf
 In the future, it could be used for authentication.
 
 **Payload**
-```json
+```javascript
 null
 ```
 
@@ -126,9 +126,9 @@ null
 The `connection` message kind is sent in response to a `registration` request.
 
 **Payload**
-```json
+```javascript
 {
-    # The client_id field stores the UUID of the current client/session.
+    // The client_id field stores the UUID of the current client/session.
     "client_id": "754cd3a0-27b3-4c51-a66e-466fed82b667"
 }
 ```
@@ -138,11 +138,11 @@ The `connection` message kind is sent in response to a `registration` request.
 The `send` message kind is sent when a client wants to send a message to another client.
 
 **Payload**
-```json
+```javascript
 {
-    # The receiver_id field stores the UUID of the message's recipient.
+    // The receiver_id field stores the UUID of the message's recipient.
     "receiver_id": "754cd3a0-27b3-4c51-a66e-466fed82b667",
-    # The text of the message
+    // The text of the message
     "text": "Lorem ipsum dolor sit amet..."
 }
 ```
@@ -152,11 +152,11 @@ The `send` message kind is sent when a client wants to send a message to another
 The `receive` message kind is sent by the server when a client is receiving a message.
 
 **Payload**
-```json
+```javascript
 {
-    # The sender_id field stores the UUID of the message's sender.
+    // The sender_id field stores the UUID of the message's sender.
     "sender_id": "754cd3a0-27b3-4c51-a66e-466fed82b667",
-    # The text of the message
+    // The text of the message
     "text": "Lorem ipsum dolor sit amet..."
 }
 ```
@@ -166,7 +166,7 @@ The `receive` message kind is sent by the server when a client is receiving a me
 The `ack` message kind is sent to acknowledge of the reception of a `send` or a `receive` message.
 
 **Payload**
-```json
+```javascript
 null
 ```
 
