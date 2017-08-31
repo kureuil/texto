@@ -112,9 +112,6 @@ func (c *Client) HandleMessage(msg *ChatMessage) *ChatMessage {
 // Run listens on the inboundChan and outboundChan for new messages to process or send.
 // It timeouts after 5 minutes of inactivity.
 func (c *Client) Run() {
-	c.outboundChan <- NewConnectionMessage(nil, c.ID, ConnectionMessagePayload{
-		ClientID: c.ID,
-	})
 	go c.consumeWebsocket()
 	for {
 		select {

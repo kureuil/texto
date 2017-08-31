@@ -23,5 +23,10 @@ func (h *ChatHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	client := NewClient(h.Log, conn, h.Broker)
 	h.Broker.Register(client)
+	if len(r.URL.Query().Get("nogreet")) == 0 {
+		client.outboundChan <- NewConnectionMessage(nil, client.ID, ConnectionMessagePayload{
+			ClientID: client.ID,
+		})
+	}
 	client.Run()
 }
