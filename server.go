@@ -1,3 +1,5 @@
+//go:generate statik -f -src=./public
+
 package texto
 
 import (
@@ -6,7 +8,9 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
+	"github.com/rakyll/statik/fs"
 	"github.com/sirupsen/logrus"
+	_ "github.com/kureuil/texto/statik"
 )
 
 // A Server bundles an HTTP Server and all the configuration required at runtime.
@@ -30,6 +34,11 @@ func NewServer(log *logrus.Logger, addr string, broker Broker) (*Server, error) 
 			},
 		},
 	})
+	statikFS, err := fs.New()
+	if err != nil {
+		return nil, err
+	}
+	mux.Handle("/", http.FileServer(statikFS))
 	return &Server{
 		Log:    log,
 		Broker: broker,

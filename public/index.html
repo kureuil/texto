@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Texto</title>
+    <style>
+        .wrapper {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .form-control {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: .5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <h1>Texto</h1>
+        <h2>Client ID: <span id="sessionID">Connecting...</span></h2>
+        <hr>
+        <form id="message-form">
+            <div id="error-box">
+            </div>
+            <div class="form-control">
+                <label class="form-label" for="message-recipient-input">Recipient ID</label>
+                <input id="message-recipient-input">
+            </div>
+            <div class="form-control">
+                <label class="form-label" for="message-text-input">Text</label>
+                <textarea id="message-text-input"></textarea>
+            </div>
+            <button id="message-form-submit" disabled>Send</button>
+        </form>
+        <hr>
+        <ul id="message-log">
+        </ul>
+    </div>
+    <script src="/texto.js"></script>
+</body>
+</html>

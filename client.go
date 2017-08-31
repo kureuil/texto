@@ -55,7 +55,7 @@ func (c *Client) consumeWebsocket() {
 				close(c.inboundChan)
 				break
 			}
-			c.outboundChan <- NewErrorMessage(&message.ID, c.ID, ErrorMessagePayload{
+			c.outboundChan <- NewErrorMessage(nil, c.ID, ErrorMessagePayload{
 				Code:        "ESYNTAX",
 				Description: "Unable to process the message due to a syntax error.",
 			})
