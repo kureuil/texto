@@ -142,7 +142,6 @@
          */
         _onMessage(event) {
             let message = TextoMessage.fromJSON(event.data);
-            console.log(message);
             if (this._sessionId === null) {
                 if (message.kind === TextoMessage.ConnectionKind) {
                     this._sessionId = message.client_id;
