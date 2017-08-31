@@ -1,19 +1,19 @@
 package texto
 
 import (
+	"context"
 	"net/http"
 	"time"
 
 	"github.com/gorilla/websocket"
 	"github.com/sirupsen/logrus"
-	"context"
 )
 
 // A Server bundles an HTTP Server and all the configuration required at runtime.
 type Server struct {
 	Log        *logrus.Logger
-	broker     Broker
-	httpServer http.Server
+	Broker     Broker
+	HTTPServer http.Server
 }
 
 // NewServer returns an initialized Server.
@@ -31,9 +31,9 @@ func NewServer(log *logrus.Logger, addr string, broker Broker) (*Server, error) 
 		},
 	})
 	return &Server{
-		Log: log,
-		broker: broker,
-		httpServer: http.Server{
+		Log:    log,
+		Broker: broker,
+		HTTPServer: http.Server{
 			Addr:              addr,
 			Handler:           mux,
 			ReadTimeout:       60 * time.Second,
@@ -46,7 +46,7 @@ func NewServer(log *logrus.Logger, addr string, broker Broker) (*Server, error) 
 
 // Run tells the Server to start listening for incoming HTTP connections.
 func (s *Server) Run(ctx context.Context) error {
-	s.Log.WithField("addr", s.httpServer.Addr).Info("Starting HTTP server")
-	go s.broker.Poll(ctx)
-	return s.httpServer.ListenAndServe()
+	s.Log.WithField("addr", s.HTTPServer.Addr).Info("Starting HTTP server")
+	go s.Broker.Poll(ctx)
+	return s.HTTPServer.ListenAndServe()
 }

@@ -10,7 +10,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-// A broker is responsible for transmitting messages between users.
+// A Broker is responsible for transmitting messages between users.
 type Broker interface {
 	// Regsiter adds a Client to the Broker
 	Register(client *Client) error
@@ -20,6 +20,7 @@ type Broker interface {
 	Poll(ctx context.Context) error
 }
 
+// A BrokerMessage is sent between Brokers to transmit the messages to the right user.
 type BrokerMessage struct {
 	SenderID    uuid.UUID
 	RecipientID uuid.UUID
@@ -54,7 +55,7 @@ func NewRedisBroker(log *logrus.Logger, addr string) (*RedisBroker, error) {
 	}, nil
 }
 
-// Register registers a Client in the internal Client map of the broker.
+// Register registers a Client in the internal Client map of the Broker.
 func (b *RedisBroker) Register(client *Client) error {
 	b.clients.Store(client.ID.String(), client)
 	return nil
