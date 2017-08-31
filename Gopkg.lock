@@ -53,11 +53,11 @@
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix","windows"]
-  revision = "2d6f6f883a06fc0d5f4b14a81e4c28705ea64c15"
+  revision = "bb24a47a89eac6c1227fbcb2ae37a8b9ed323366"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "ac8b87437cc893900c3141ce9636606b236e45bd5659d7fd798134c339087ad1"
+  inputs-digest = "10e74ab2471e139c6ffdf0ceeda6cea142869d0591bc79b10f07d031f8c3bc46"
   solver-name = "gps-cdcl"
   solver-version = 1
