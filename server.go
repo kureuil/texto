@@ -8,9 +8,9 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
+	_ "github.com/kureuil/texto/statik"
 	"github.com/rakyll/statik/fs"
 	"github.com/sirupsen/logrus"
-	_ "github.com/kureuil/texto/statik"
 )
 
 // A Server bundles an HTTP Server and all the configuration required at runtime.
@@ -24,7 +24,6 @@ type Server struct {
 
 // NewServer returns an initialized Server.
 func NewServer(parent context.Context, log *logrus.Logger, addr string, broker Broker) (*Server, error) {
-	ctx, cancel := context.WithCancel(parent)
 	mux := http.NewServeMux()
 	mux.Handle("/v1/texto", &ChatHandler{
 		Log:    log,
@@ -43,6 +42,7 @@ func NewServer(parent context.Context, log *logrus.Logger, addr string, broker B
 		return nil, err
 	}
 	mux.Handle("/", http.FileServer(statikFS))
+	ctx, cancel := context.WithCancel(parent)
 	return &Server{
 		Log:    log,
 		Broker: broker,
