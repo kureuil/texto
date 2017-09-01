@@ -3,8 +3,8 @@ package texto
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/satori/go.uuid"
+	"github.com/stretchr/testify/assert"
 )
 
 const invalidChatMessage = `

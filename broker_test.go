@@ -2,6 +2,7 @@ package texto
 
 import (
 	"context"
+	"encoding/json"
 	"sync"
 	"testing"
 
@@ -9,7 +10,6 @@ import (
 	"github.com/rafaeljusto/redigomock"
 	"github.com/satori/go.uuid"
 	"github.com/stretchr/testify/assert"
-	"encoding/json"
 )
 
 func mapLen(map_ *sync.Map) int {
