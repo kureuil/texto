@@ -26,6 +26,12 @@
   version = "v1.0.0"
 
 [[projects]]
+  name = "github.com/rafaeljusto/redigomock"
+  packages = ["."]
+  revision = "7ae0511314e9946bb0c87d6d485169ab2467a290"
+  version = "v2.1"
+
+[[projects]]
   name = "github.com/rakyll/statik"
   packages = ["fs"]
   revision = "fd36b3595eb2ec8da4b8153b107f7ea08504899d"
@@ -59,11 +65,11 @@
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix","windows"]
-  revision = "bb24a47a89eac6c1227fbcb2ae37a8b9ed323366"
+  revision = "a07a691ac871746ae690ccf3ab217363b2144531"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "9252ac57ff12ada64ca8b1a8225f855d9db5c96765ab9faf55ebe96ec7e8c346"
+  inputs-digest = "010c7b787a735796530651935ccede03600e91885a0c4b903bd875f3acfeb2c6"
   solver-name = "gps-cdcl"
   solver-version = 1

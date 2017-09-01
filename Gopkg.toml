@@ -30,6 +30,10 @@
   version = "1.2.0"
 
 [[constraint]]
+  name = "github.com/rafaeljusto/redigomock"
+  version = "2.1.0"
+
+[[constraint]]
   name = "github.com/rakyll/statik"
   version = "0.1.1"
 
