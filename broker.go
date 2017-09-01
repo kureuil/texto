@@ -34,10 +34,10 @@ const RedisBrokerPrefix = "texto:"
 
 // A RedisBroker transmits messages between users using Redis as its backend.
 type RedisBroker struct {
-	log     *logrus.Logger
-	clients sync.Map
-	conn    redis.Conn
-	pubsub  redis.PubSubConn
+	Log        *logrus.Logger
+	clients    sync.Map
+	conn       redis.Conn
+	pubSubConn redis.PubSubConn
 }
 
 // NewRedisBroker creates a new RedisBroker instance, connecting to the Redis server using the given TCP address.
@@ -46,14 +46,14 @@ func NewRedisBroker(log *logrus.Logger, addr string) (*RedisBroker, error) {
 	if err != nil {
 		return nil, err
 	}
-	pubsubConn, err := redis.Dial("tcp", addr)
+	pubSubConn, err := redis.Dial("tcp", addr)
 	if err != nil {
 		return nil, err
 	}
 	return &RedisBroker{
-		log:    log,
-		conn:   redisConn,
-		pubsub: redis.PubSubConn{Conn: pubsubConn},
+		Log:        log,
+		conn:       redisConn,
+		pubSubConn: redis.PubSubConn{Conn: pubSubConn},
 	}, nil
 }
 
@@ -72,20 +72,25 @@ func (b *RedisBroker) Unregister(client *Client) error {
 // PumpMessages subscribe to Redis channels, reads all incoming messages and sends them into the given channel.
 // If an error is encountered while reading the messages, the channel is closed and the function exits.
 func (b *RedisBroker) PumpMessages(channelsPattern string, out chan *redis.PMessage) {
-	b.pubsub.PSubscribe(channelsPattern)
+	if err := b.pubSubConn.PSubscribe(channelsPattern); err != nil {
+		b.Log.Error()
+		return
+	}
 	defer func() {
-		b.pubsub.PUnsubscribe(channelsPattern)
+		if err := b.pubSubConn.PUnsubscribe(channelsPattern); err != nil {
+			b.Log.Error()
+			return
+		}
 	}()
 	for {
-		switch n := b.pubsub.Receive().(type) {
+		switch n := b.pubSubConn.Receive().(type) {
 		case redis.PMessage:
-			b.log.
+			b.Log.
 				WithField("channel", n.Channel).
-				WithField("data", n.Data).
 				Info("Received pmessage")
 			out <- &n
 		case error:
-			b.log.Error(n)
+			b.Log.Error(n)
 			close(out)
 			return
 		}
@@ -106,7 +111,7 @@ func (b *RedisBroker) Poll(ctx context.Context) error {
 			}
 			message := new(BrokerMessage)
 			if err := json.Unmarshal(pmessage.Data, message); err != nil {
-				b.log.Error(err)
+				b.Log.Error(err)
 				break
 			}
 			v, ok := b.clients.Load(message.RecipientID.String())
@@ -115,7 +120,7 @@ func (b *RedisBroker) Poll(ctx context.Context) error {
 			}
 			client, ok := v.(*Client)
 			if !ok {
-				b.log.
+				b.Log.
 					WithField("sender", message.SenderID).
 					WithField("recipient", message.RecipientID).
 					Warn("Value is not a valid *Client")
