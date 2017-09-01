@@ -18,10 +18,13 @@ type Server struct {
 	Log        *logrus.Logger
 	Broker     Broker
 	HTTPServer http.Server
+	cancelFunc context.CancelFunc
+	ctx        context.Context
 }
 
 // NewServer returns an initialized Server.
-func NewServer(log *logrus.Logger, addr string, broker Broker) (*Server, error) {
+func NewServer(parent context.Context, log *logrus.Logger, addr string, broker Broker) (*Server, error) {
+	ctx, cancel := context.WithCancel(parent)
 	mux := http.NewServeMux()
 	mux.Handle("/v1/texto", &ChatHandler{
 		Log:    log,
@@ -33,6 +36,7 @@ func NewServer(log *logrus.Logger, addr string, broker Broker) (*Server, error) 
 				return true
 			},
 		},
+		Timeout: 5 * time.Minute,
 	})
 	statikFS, err := fs.New()
 	if err != nil {
@@ -50,12 +54,23 @@ func NewServer(log *logrus.Logger, addr string, broker Broker) (*Server, error) 
 			WriteTimeout:      60 * time.Second,
 			IdleTimeout:       60 * time.Second,
 		},
+		cancelFunc: cancel,
+		ctx:        ctx,
 	}, nil
 }
 
 // Run tells the Server to start listening for incoming HTTP connections.
-func (s *Server) Run(ctx context.Context) error {
+func (s *Server) Run() error {
 	s.Log.WithField("addr", s.HTTPServer.Addr).Info("Starting HTTP server")
-	go s.Broker.Poll(ctx)
+	go s.Broker.Poll(s.ctx)
 	return s.HTTPServer.ListenAndServe()
+}
+
+// Stop gracefully stops the server.
+func (s *Server) Stop() error {
+	if err := s.HTTPServer.Shutdown(s.ctx); err != nil {
+		return err
+	}
+	s.cancelFunc()
+	return nil
 }

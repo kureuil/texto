@@ -111,7 +111,7 @@ func (c *Client) HandleMessage(msg *ChatMessage) *ChatMessage {
 
 // Run listens on the inboundChan and outboundChan for new messages to process or send.
 // It timeouts after 5 minutes of inactivity.
-func (c *Client) Run() {
+func (c *Client) Run(timeout time.Duration) {
 	go c.consumeWebsocket()
 	for {
 		select {
@@ -139,7 +139,7 @@ func (c *Client) Run() {
 				c.log.Error(err)
 				return
 			}
-		case <-time.After(5 * time.Minute):
+		case <-time.After(timeout):
 			c.log.
 				WithField("client", c.ID.String()).
 				Info("Connection timeout")

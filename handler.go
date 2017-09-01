@@ -5,6 +5,7 @@ import (
 
 	"github.com/gorilla/websocket"
 	"github.com/sirupsen/logrus"
+	"time"
 )
 
 // ChatHandler is the HTTP Handler responsible for upgrading connections to the WebSocket Protocol and managing them.
@@ -12,6 +13,7 @@ type ChatHandler struct {
 	Log      *logrus.Logger
 	Broker   Broker
 	Upgrader websocket.Upgrader
+	Timeout  time.Duration
 }
 
 // ServeHTTP is the http.Handler implementation for ChatHandler.
@@ -31,5 +33,5 @@ func (h *ChatHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			ClientID: client.ID,
 		})
 	}
-	client.Run()
+	client.Run(h.Timeout)
 }

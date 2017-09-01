@@ -6,6 +6,9 @@ services:
       - 8080
     links:
       - redis
+    environment:
+      - PORT=8080
+      - REDIS_URL=redis:6379
   redis:
     image: "redis:4-alpine"
   proxy:
